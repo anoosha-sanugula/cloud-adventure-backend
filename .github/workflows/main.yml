@@ -1,0 +1,31 @@
+name: Cloud_Adventure Backend
+run-name: Cloud_Adventure
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  Workflow-for-Backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: mysecretpassword
+          POSTGRES_DB: my_test_db
+        ports:
+          - "5432:5432"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "21"
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm run test
