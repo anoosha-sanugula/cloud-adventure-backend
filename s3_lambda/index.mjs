@@ -4,10 +4,9 @@ import {
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
 import sharp from "sharp";
-
 const S3 = new S3Client();
 const DEST_BUCKET = process.env.DEST_BUCKET;
-const THUMBNAIL_WIDTH = 200; 
+const THUMBNAIL_WIDTH = 200;
 const SUPPORTED_FORMATS = {
   jpg: true,
   jpeg: true,

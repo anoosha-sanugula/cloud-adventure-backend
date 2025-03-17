@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage: storage });
-
+export let new_user: User;
 export const createUser = async (req: Request, res: Response): Promise<any> => {
   console.log("Backend data:", req.body);
   console.log("Uploaded file:", req.file);
@@ -50,7 +50,7 @@ export const createUser = async (req: Request, res: Response): Promise<any> => {
       ContentType: req.file.mimetype,
     };
     console.log("hii before");
-    s3.upload(params, async (err: any, data: any) => {
+    const data: any = s3.upload(params, async (err: any, data: any) => {
       if (err) {
         console.error("Error uploading file to S3:", err);
         return res.status(500).send("Error uploading file to S3");
@@ -59,15 +59,16 @@ export const createUser = async (req: Request, res: Response): Promise<any> => {
       console.log("S3 upload successful:", data);
     });
     console.log("hii after");
-    const new_user = new User(firstname, lastname, password);
+    new_user = new User(firstname, lastname, password);
     await new_user.encryptPassword();
 
-    // await Users.create({
-    //   username: new_user.username,
-    //   password: new_user.password,
-    //   email: new_user.email,
-    //   country: new_user.country,
-    // });
+    await Users.create({
+      firstname: new_user.firstname,
+      lastname: new_user.lastname,
+      password: new_user.password,
+      original_profile_url: `https://${process.env.SOURCE_BUCKET}.s3.ap-south-1.amazonaws.com/${params.Key}`,
+      resized_profile_url: `https://${process.env.DEST_BUCKET}.s3.ap-south-1.amazonaws.com/${params.Key}`,
+    });
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     if (!accessTokenSecret) {
       return res
@@ -79,6 +80,7 @@ export const createUser = async (req: Request, res: Response): Promise<any> => {
       lastname: new_user.lastname,
     };
     const accessToken = jwt.sign({ user_details }, accessTokenSecret);
+
     return res.status(201).json({
       message: "User created successfully",
       data: new_user,
