@@ -1,6 +1,7 @@
 import { sequelize } from "./server";
 import express from "express";
 import cors from "cors";
+import userRoutes from "./routes/user/user";
 import 'dotenv/config';
 const app = express();
 app.use(cors());
@@ -13,6 +14,8 @@ export const main = async () => {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
     console.log("Connection has been established successfully.");
+
+    app.use("/cloudadventure", userRoutes);
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
