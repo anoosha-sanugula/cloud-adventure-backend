@@ -15,7 +15,10 @@ AWS.config.update({
 });
 
 const s3 = new AWS.S3();
-
+const upload_dir = "uploads/";
+if (!fs.existsSync(upload_dir)) {
+  fs.mkdirSync(upload_dir, { recursive: true });
+}
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
