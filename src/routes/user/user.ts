@@ -8,5 +8,4 @@ userRoutes.use(express.json());
 
 userRoutes.post("/users", upload.single("profile_image"), createUser);
 userRoutes.post("/user", loginUser);
-// userRoutes.get("/user/:id",getUser);
 export default userRoutes;
